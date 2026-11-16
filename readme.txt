@@ -3,7 +3,7 @@ Tags: screenshots, screen recording, media library, sharing, team
 Requires at least: 7.1
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.0.2
+Stable tag: 1.0.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -70,6 +70,9 @@ We're still checking. Revoking a link closes its share page. Whether it also sto
 No. It works on self-hosted WordPress and on WordPress.com plans that allow plugins.
 
 == Changelog ==
+
+= 1.0.3 =
+* Share links open for signed-out visitors on a WordPress.com site set to Private. Only a live link's page and media get through; revoked, expired, and unknown links still see the site's private screen.
 
 = 1.0.2 =
 * Recordings on shared folder pages show their VideoPress poster instead of a plain tile.
