@@ -59,7 +59,7 @@ On a team site, every shot is visible to everyone who can upload, and to site ad
 
 = Are the files themselves private? =
 
-Not on their own. The plugin hides shots from WordPress's public listings, and its own routes check who's asking. But each image or video still lives at a normal uploads address, and that address isn't secret. Anyone who has the exact address can open the file, and revoking a link doesn't change that. Only a private WordPress.com site or server rules that block the uploads folder protect the files themselves. A private site also blocks the `/s/` share pages.
+Not on their own. The plugin hides shots from WordPress's public listings, and its own routes check who's asking. But each image or video still lives at a normal uploads address, and that address isn't secret. Anyone who has the exact address can open the file, and revoking a link doesn't change that. Only a private WordPress.com site or server rules that block the uploads folder protect the files themselves. A private site also blocks the `/s/` share pages unless you turn on `pressshot_share_on_private_site`; once it's on, every live link on the site opens for anyone who has it.
 
 = Does revoking a link stop a VideoPress video? =
 
@@ -72,7 +72,7 @@ No. It works on self-hosted WordPress and on WordPress.com plans that allow plug
 == Changelog ==
 
 = 1.0.3 =
-* Share links open for signed-out visitors on a WordPress.com site set to Private. Only a live link's page and media get through; revoked, expired, and unknown links still see the site's private screen.
+* A WordPress.com site set to Private can let share links open for signed-out visitors. It's off until you turn it on (`wp option update pressshot_share_on_private_site 1`, or the `pressshot_share_on_private_site` filter). Only a live link's page and media get through, the page is shown without the theme's header and footer, and revoked, expired, and unknown links still see the site's private screen.
 
 = 1.0.2 =
 * Recordings on shared folder pages show their VideoPress poster instead of a plain tile.
