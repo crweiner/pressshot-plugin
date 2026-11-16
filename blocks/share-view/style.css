@@ -1,0 +1,254 @@
+/*
+ * Share pages put the image first. A slim top bar holds the name (small, muted, truncated) and
+ * the actions; the shot fills the rest of the window on a soft surface. Colors come from the
+ * theme's presets when it has them (base, contrast, muted) and from the text color when it doesn't,
+ * so the page reads well in light and dark.
+ */
+.wp-block-pressshot-share-view {
+	--pressshot-share-text: var(--wp--preset--color--contrast, currentColor);
+	--pressshot-share-muted: var(--wp--preset--color--muted, color-mix(in srgb, currentColor 72%, transparent));
+	--pressshot-share-line: color-mix(in srgb, var(--pressshot-share-text) 14%, transparent);
+	--pressshot-share-surface: color-mix(in srgb, var(--pressshot-share-text) 5%, transparent);
+	--pressshot-share-bar-height: 3.5rem;
+	/* Room left for the page's footer under the stage. A theme can set this to match its own. */
+	--pressshot-share-footer: 4rem;
+	--pressshot-share-pad: max(1rem, var(--wp--style--root--padding-left, 1rem));
+	display: flex;
+	flex-direction: column;
+	margin-block: 0;
+	min-width: 0;
+}
+:where(.wp-site-blocks) > * + .wp-block-pressshot-share-view,
+:where(main) > .wp-block-pressshot-share-view {
+	margin-block-start: 0;
+}
+
+/* Top bar */
+.pressshot-share__bar {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.5rem 0.75rem;
+	min-height: var(--pressshot-share-bar-height);
+	padding: 0.5rem var(--pressshot-share-pad);
+	box-sizing: border-box;
+	border-bottom: 1px solid var(--pressshot-share-line);
+}
+.pressshot-share__site {
+	flex: none;
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5rem;
+	font-weight: 600;
+	font-size: var(--wp--preset--font-size--small, 0.875rem);
+	color: var(--pressshot-share-text);
+	text-decoration: none;
+}
+.pressshot-share__logo {
+	display: block;
+	flex: none;
+	width: 24px;
+	height: 24px;
+	object-fit: contain;
+}
+.pressshot-share__site:hover,
+.pressshot-share__site:focus-visible {
+	text-decoration: underline;
+}
+.pressshot-share__back {
+	flex: none;
+	font-size: var(--wp--preset--font-size--small, 0.875rem);
+	color: var(--pressshot-share-text);
+	text-decoration: none;
+	white-space: nowrap;
+}
+.pressshot-share__back::before {
+	content: "\2190\00a0";
+}
+.pressshot-share__back:hover,
+.pressshot-share__back:focus-visible {
+	text-decoration: underline;
+}
+.wp-block-pressshot-share-view .pressshot-share__name {
+	flex: 1 1 8rem;
+	min-width: 0;
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
+	color: var(--pressshot-share-muted);
+	font-family: inherit;
+	font-size: var(--wp--preset--font-size--small, 0.875rem);
+	font-style: normal;
+	font-weight: 400;
+	letter-spacing: normal;
+	line-height: 1.4;
+	text-overflow: ellipsis;
+	text-transform: none;
+	white-space: nowrap;
+}
+.pressshot-share__actions,
+.pressshot-share__extras {
+	display: flex;
+	flex: none;
+	align-items: center;
+	gap: 0.5rem;
+}
+.pressshot-share__actions {
+	margin-inline-start: auto;
+}
+.pressshot-share__extras > * {
+	margin-block: 0;
+}
+.wp-block-pressshot-share-view .pressshot-share__actions .wp-element-button {
+	padding: 0.4em 0.9em;
+	font-size: var(--wp--preset--font-size--small, 0.875rem);
+	line-height: 1.4;
+	white-space: nowrap;
+}
+/* Download is the quieter of the two: an outline in the text color. */
+.wp-block-pressshot-share-view .pressshot-share__download.wp-element-button {
+	background: transparent;
+	color: var(--pressshot-share-text);
+	box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--pressshot-share-text) 35%, transparent);
+	border-color: transparent;
+}
+.wp-block-pressshot-share-view .pressshot-share__download.wp-element-button:hover,
+.wp-block-pressshot-share-view .pressshot-share__download.wp-element-button:focus-visible {
+	background: var(--pressshot-share-surface);
+}
+.pressshot-share__copy {
+	cursor: pointer;
+}
+
+/* The shot, filling the window below the bar */
+.pressshot-share__stage {
+	--pressshot-share-room: calc(100dvh - var(--wp-admin--admin-bar--height, 0px) - var(--pressshot-share-bar-height) - var(--pressshot-share-footer));
+	display: grid;
+	place-items: center;
+	min-height: max(16rem, var(--pressshot-share-room));
+	padding: clamp(0.75rem, 2.5vw, 2rem);
+	box-sizing: border-box;
+	background: var(--pressshot-share-surface);
+}
+.pressshot-share__media {
+	display: grid;
+	place-items: center;
+	width: 100%;
+	min-width: 0;
+}
+.pressshot-share__media img,
+.pressshot-share__media video {
+	display: block;
+	width: auto;
+	height: auto;
+	max-width: 100%;
+	max-height: calc(max(16rem, var(--pressshot-share-room)) - 2 * clamp(0.75rem, 2.5vw, 2rem));
+	object-fit: contain;
+	border-radius: 4px;
+	box-shadow: 0 1px 2px rgb(0 0 0 / 8%), 0 8px 28px rgb(0 0 0 / 10%);
+}
+.pressshot-share__media iframe {
+	display: block;
+	width: min(100%, calc((max(16rem, var(--pressshot-share-room)) - 2 * clamp(0.75rem, 2.5vw, 2rem)) * 16 / 9));
+	aspect-ratio: 16 / 9;
+	border: 0;
+	border-radius: 4px;
+}
+
+/* Folder pages: subfolders and a grid of shots */
+.pressshot-share__body {
+	display: grid;
+	gap: 1.25rem;
+	padding: clamp(1rem, 3vw, 2rem) var(--pressshot-share-pad);
+	min-height: max(16rem, calc(100dvh - var(--wp-admin--admin-bar--height, 0px) - var(--pressshot-share-bar-height) - var(--pressshot-share-footer)));
+	box-sizing: border-box;
+	align-content: start;
+}
+.pressshot-share__grid,
+.pressshot-share__folders {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+.pressshot-share__grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr));
+	gap: 1.25rem;
+}
+.pressshot-share__tile {
+	display: grid;
+	gap: 0.4rem;
+	min-width: 0;
+	color: var(--pressshot-share-muted);
+	text-decoration: none;
+}
+.pressshot-share__shot-name {
+	overflow: hidden;
+	font-size: var(--wp--preset--font-size--small, 0.875rem);
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+.pressshot-share__tile:hover .pressshot-share__shot-name,
+.pressshot-share__tile:focus-visible .pressshot-share__shot-name {
+	color: var(--pressshot-share-text);
+	text-decoration: underline;
+}
+.pressshot-share__tile img,
+.pressshot-share__placeholder {
+	display: block;
+	width: 100%;
+	aspect-ratio: 4 / 3;
+	object-fit: contain;
+	box-sizing: border-box;
+	border-radius: 6px;
+	background: var(--pressshot-share-surface);
+	box-shadow: inset 0 0 0 1px var(--pressshot-share-line);
+}
+.pressshot-share__tile:hover img,
+.pressshot-share__tile:focus-visible img {
+	box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--pressshot-share-text) 40%, transparent);
+}
+.pressshot-share__placeholder {
+	display: grid;
+	place-items: center;
+	font-size: var(--wp--preset--font-size--small, 0.875rem);
+}
+.pressshot-share__folders {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+	font-size: var(--wp--preset--font-size--small, 0.875rem);
+}
+.pressshot-share__folders li {
+	padding: 0.2em 0.7em;
+	border: 1px solid var(--pressshot-share-line);
+	border-radius: 999px;
+	color: var(--pressshot-share-muted);
+}
+.pressshot-share__empty {
+	margin: 0;
+	color: var(--pressshot-share-muted);
+}
+
+/* A link that's gone */
+.pressshot-share__unavailable {
+	margin: 0;
+	padding: 4rem var(--pressshot-share-pad, 1.5rem);
+	text-align: center;
+}
+
+/* Editor placeholder for the top bar's inner blocks */
+.pressshot-share__extras-editor {
+	width: 100%;
+}
+
+/* Narrow screens: the shot sits right under the bar instead of centered in a tall, mostly empty stage. */
+@media (max-width: 600px) {
+	.pressshot-share__stage,
+	.pressshot-share__body {
+		min-height: 0;
+	}
+	.pressshot-share__stage {
+		padding: 0.75rem;
+	}
+}

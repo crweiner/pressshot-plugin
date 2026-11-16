@@ -1,0 +1,57 @@
+{
+  "name": "pressshot-plugin",
+  "version": "1.0.1",
+  "description": "PressShot Library for WordPress",
+  "files": [
+    "pressshot.php",
+    "readme.txt",
+    "LICENSE",
+    "includes/",
+    "assets/",
+    "blocks/",
+    "templates/",
+    "build/",
+    "docs/shot-marker.md"
+  ],
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "build": "wp-scripts build",
+    "start": "wp-scripts start",
+    "test:js": "wp-scripts test-unit-jest",
+    "test:php": "bin/test-php.sh",
+    "plugin-zip": "npm run build && wp-scripts plugin-zip --root-folder=pressshot && bin/check-zip.sh",
+    "check-zip": "bin/check-zip.sh"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dhanson-wp/pressshot-plugin.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "GPL-2.0-or-later",
+  "bugs": {
+    "url": "https://github.com/dhanson-wp/pressshot-plugin/issues"
+  },
+  "homepage": "https://github.com/dhanson-wp/pressshot-plugin#readme",
+  "devDependencies": {
+    "@testing-library/dom": "^10.4.2",
+    "@testing-library/react": "^16.3.3",
+    "@wordpress/scripts": "^37.1.0",
+    "jest": "^30.5.2",
+    "jest-environment-jsdom": "^30.5.2"
+  },
+  "private": true,
+  "dependencies": {
+    "@wordpress/api-fetch": "^8.1.0",
+    "@wordpress/components": "^44.0.0",
+    "@wordpress/dataviews": "^22.0.0",
+    "@wordpress/date": "^6.1.0",
+    "@wordpress/element": "^10.1.0",
+    "@wordpress/html-entities": "^5.1.0",
+    "@wordpress/i18n": "^7.1.0",
+    "@wordpress/icons": "^20.0.0",
+    "@wordpress/primitives": "^5.1.0"
+  }
+}

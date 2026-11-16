@@ -1,0 +1,762 @@
+@use 'tokens' as *;
+@use 'theme-bridge';
+
+// Library layout.
+// Corners follow the theme when its theme.json sets custom.borderRadius or
+// custom.radius; otherwise they stay square.
+$pressshot-radius: var(--wp--custom--border-radius, var(--wp--custom--radius, 0));
+
+// WordPress places popovers (menus, view options) with absolute positions measured from the
+// page. On the front end the admin bar pushes the page down with `html { margin-top }`, and the
+// positioning library subtracts that margin while the browser doesn't, so every popover landed
+// the admin bar's height too high, over its own button. Popovers render into one container at
+// the end of the body; making it positioned gives them a real containing block to measure from,
+// which puts them where they're meant to be. (Positioning the body instead would also move the
+// admin bar, which is absolutely positioned on phones.)
+body.has-pressshot-library .components-popover__fallback-container {
+	position: relative;
+}
+
+// @wordpress/icons draws some icons, like the check in DataViews' Properties list, with strokes
+// and no fill. Item buttons from @wordpress/components fill every path inside them, which turns
+// those checks into solid triangles. Paths go back to inheriting their icon's own fill.
+body.has-pressshot-library .components-item svg path:not([fill]) {
+	fill: inherit;
+}
+
+// The block is full width (align: full in the template). The template's main
+// group has no padding, so the sidebar sits at the left edge.
+.wp-block-pressshot-library.alignfull {
+	max-width: none;
+	margin-block: 0;
+}
+
+// The sign-in prompt and other messages (no app inside). On pages without a header, like a
+// front page, they'd sit at the screen edge, so they take the theme's page padding.
+.wp-block-pressshot-library.is-message {
+	padding-inline: var(--wp--style--root--padding-left, 1.5rem) var(--wp--style--root--padding-right, 1.5rem);
+}
+
+.pressshot-library {
+	display: grid;
+	grid-template-columns: 240px minmax(0, 1fr);
+	align-items: stretch;
+	color: $pressshot-text;
+	font-family: inherit;
+
+	@media (max-width: 781px) {
+		grid-template-columns: minmax(0, 1fr);
+	}
+}
+
+.pressshot-library__main {
+	min-width: 0;
+	padding: 24px 32px 48px;
+
+	@media (max-width: 781px) {
+		padding: 16px;
+	}
+
+	.components-notice {
+		margin: 0 0 16px;
+	}
+}
+
+.pressshot-library__header {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 8px;
+	margin: 0 0 16px;
+}
+
+// The sidebar button starts the row, its icon in line with the content.
+.pressshot-library__sidebar-button.components-button {
+	flex: none;
+	margin-inline-start: -6px;
+	color: inherit;
+}
+
+// Search at the top right; on narrow screens it takes its own row.
+.pressshot-library__search {
+	flex: 0 1 280px;
+	margin-inline-start: auto;
+
+	@media (max-width: 781px) {
+		flex-basis: 100%;
+	}
+}
+
+// Collapsed sidebar: the shots take the full width.
+.pressshot-library.is-sidebar-collapsed {
+	grid-template-columns: minmax(0, 1fr);
+
+	> .pressshot-sidebar {
+		display: none;
+	}
+}
+
+// Toolbar: Select all and the count; sort, layouts, view options.
+.pressshot-toolbar {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 8px 16px;
+	margin: 0 0 16px;
+}
+
+.pressshot-toolbar__start,
+.pressshot-toolbar__end {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.pressshot-toolbar__end {
+	gap: 4px;
+	margin-inline-start: auto;
+}
+
+.pressshot-toolbar__select-all {
+	// Line the box up with the grid's first card.
+	.components-checkbox-control__input-container {
+		margin-inline-end: 0;
+	}
+}
+
+.pressshot-toolbar__count {
+	color: $pressshot-muted;
+	font-size: 13px;
+	font-variant-numeric: tabular-nums;
+}
+
+.pressshot-toolbar__sort .components-button {
+	color: inherit;
+	font-family: inherit;
+}
+
+// DataViews insets its grid, table, filters, and footer from the edges. Our
+// top bar and toolbar sit outside that inset, so drop it to line them all up.
+.pressshot-library .dataviews-wrapper {
+
+	.dataviews-view-grid,
+	.dataviews-filters__container,
+	.dataviews-footer {
+		padding-inline: 0;
+	}
+
+	.dataviews-view-table tr td:first-child,
+	.dataviews-view-table tr th:first-child {
+		padding-inline-start: 0;
+	}
+
+	.dataviews-view-table tr td:last-child,
+	.dataviews-view-table tr th:last-child {
+		padding-inline-end: 0;
+	}
+}
+
+// The toolbar holds Select all and the count. So the grid's bulk header shows
+// only with a selection (for its actions), without its checkbox, and the
+// footer drops its item count.
+.pressshot-library__main:not(.has-selection) {
+
+	.dataviews-view-grid__bulk-actions-header {
+		display: none;
+	}
+}
+
+.pressshot-library {
+
+	.dataviews-view-grid__bulk-actions-header
+	.dataviews-bulk-actions > :first-child,
+	.dataviews-footer__item-count {
+		display: none;
+	}
+
+	// With one page there's nothing else in the footer.
+	.dataviews-footer:not(:has(.dataviews-footer__item-count ~ *)) {
+		display: none;
+	}
+}
+
+// Grid and table, two buttons in one bordered group.
+.pressshot-toolbar__layouts {
+	display: inline-flex;
+	padding: 1px;
+	border: 1px solid $pressshot-line;
+	border-radius: 2px;
+
+	// The pressed button keeps WordPress's pressed look (the accent, with the
+	// theme bridge), like the other toggles.
+	.components-button:not(.is-pressed) {
+		color: inherit;
+	}
+}
+
+.pressshot-library__heading {
+	margin: 0;
+	font-size: var(--wp--preset--font-size--large, 1.5rem);
+	line-height: 1.3;
+	overflow-wrap: anywhere;
+}
+
+// Sidebar, close to the Site Editor's navigation list.
+.pressshot-sidebar {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	padding: 24px 16px;
+	border-inline-end: 1px solid $pressshot-line;
+
+	@media (max-width: 781px) {
+		padding: 16px;
+		border-inline-end: 0;
+		border-bottom: 1px solid $pressshot-line;
+	}
+
+	.components-spinner {
+		margin: 8px;
+	}
+}
+
+.pressshot-sidebar__list {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+
+	// Trash follows the lists, set apart by a little space.
+	&--trash {
+		margin-top: 16px;
+	}
+}
+
+.pressshot-sidebar__heading-row {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin: 16px 0 4px;
+
+	.pressshot-sidebar__heading {
+		margin: 0 8px;
+	}
+}
+
+.pressshot-sidebar__heading {
+	margin: 16px 8px 4px;
+	font-size: 11px;
+	font-weight: 500;
+	line-height: 1.4;
+	text-transform: uppercase;
+	letter-spacing: 0.02em;
+	opacity: 0.7;
+}
+
+.pressshot-sidebar .pressshot-sidebar__item.components-button {
+	width: 100%;
+	justify-content: flex-start;
+	gap: 8px;
+	padding-inline: 8px;
+	border-radius: 2px;
+	color: inherit;
+	font-family: inherit;
+	text-align: start;
+
+	&:hover {
+		color: inherit;
+		background: color-mix(in srgb, #{$pressshot-text} 6%, transparent);
+	}
+
+	&[aria-current="page"],
+	&[aria-pressed="true"] {
+		background: color-mix(in srgb, #{$pressshot-text} 10%, transparent);
+		font-weight: 600;
+	}
+
+	svg,
+	.pressshot-sidebar__avatar {
+		flex: none;
+	}
+}
+
+.pressshot-sidebar__avatar {
+	width: 24px;
+	height: 24px;
+	border-radius: 50%;
+	object-fit: cover;
+}
+
+.pressshot-sidebar__label {
+	flex: 1;
+	min-width: 0;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
+// A folder's or tag's shot count, muted at the row's end.
+.pressshot-sidebar__count {
+	flex: none;
+	margin-inline-start: auto;
+	color: $pressshot-muted;
+	font-size: 12px;
+	font-variant-numeric: tabular-nums;
+	font-weight: 400;
+}
+
+// Grid cards: a wide thumbnail with a thin border, the title, one muted byline.
+.pressshot-library .dataviews-view-grid__row {
+
+	.dataviews-view-grid__row__gridcell,
+	.dataviews-view-grid__row__gridcell[data-focus-visible]::after {
+		border-radius: $pressshot-radius;
+	}
+}
+
+.pressshot-library .dataviews-view-grid {
+
+	.dataviews-view-grid__media,
+	.dataviews-view-grid__media::after {
+		border-radius: $pressshot-radius;
+	}
+
+	.dataviews-view-grid__media {
+		aspect-ratio: 16 / 10;
+
+		&::after {
+			box-shadow: inset 0 0 0 1px $pressshot-line;
+		}
+	}
+
+	.dataviews-view-grid__title-field {
+		font-weight: 500;
+		white-space: nowrap;
+		text-overflow: ellipsis;
+	}
+}
+
+.pressshot-byline {
+	display: block;
+	overflow: hidden;
+	color: $pressshot-muted;
+	font-size: 12px;
+	line-height: 1.4;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
+// Previews.
+.pressshot-preview {
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+
+	&--recording {
+		position: relative;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background: color-mix(in srgb, #{$pressshot-text} 8%, #{$pressshot-surface});
+	}
+
+	// A recording's VideoPress still fills the tile; the play badge sits on top.
+	&__poster {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+
+		+ .pressshot-play-badge {
+			position: relative;
+		}
+	}
+
+	&--icon {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background: color-mix(in srgb, #{$pressshot-text} 6%, #{$pressshot-surface});
+		color: color-mix(in srgb, #{$pressshot-text} 55%, transparent);
+	}
+}
+
+// Over a recording's preview, in the grid and the table.
+.pressshot-play-badge {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 36px;
+	height: 36px;
+	border-radius: 50%;
+	background: rgba(0, 0, 0, 0.6);
+	color: #fff;
+
+	svg {
+		fill: currentcolor;
+	}
+
+	// Table thumbnails are small; keep the badge inside them.
+	.dataviews-view-table & {
+		width: 20px;
+		height: 20px;
+
+		svg {
+			width: 10px;
+			height: 10px;
+		}
+	}
+}
+
+.pressshot-empty {
+	margin: 48px 0;
+	text-align: center;
+	opacity: 0.7;
+}
+
+// Viewer.
+.pressshot-viewer__body {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) 240px;
+	gap: 24px;
+	align-items: start;
+
+	@media (max-width: 781px) {
+		grid-template-columns: minmax(0, 1fr);
+	}
+}
+
+.pressshot-viewer__stage {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 240px;
+	background: #f0f0f0;
+	border-radius: 2px;
+}
+
+.pressshot-viewer__image,
+.pressshot-viewer__video {
+	display: block;
+	max-width: 100%;
+	max-height: 70vh;
+	height: auto;
+}
+
+.pressshot-viewer__frame {
+	width: 100%;
+	aspect-ratio: 16 / 9;
+	border: 0;
+}
+
+.pressshot-viewer__details {
+	margin: 0;
+	font-size: 13px;
+	line-height: 1.5;
+
+	dt {
+		margin-top: 12px;
+		font-size: 11px;
+		font-weight: 500;
+		text-transform: uppercase;
+		opacity: 0.7;
+
+		&:first-child {
+			margin-top: 0;
+		}
+	}
+
+	dd {
+		margin: 2px 0 0;
+		overflow-wrap: anywhere;
+	}
+}
+
+.pressshot-viewer__actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	margin-top: 24px;
+}
+
+// Dialogs.
+.pressshot-dialog {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+
+	// Dialog text stays at the admin size, whatever the theme sets for paragraphs.
+	p {
+		margin: 0;
+		font-size: 13px;
+		line-height: 1.5;
+	}
+}
+
+.pressshot-dialog__buttons {
+	display: flex;
+	justify-content: flex-end;
+	gap: 8px;
+
+	&--split {
+		justify-content: space-between;
+	}
+}
+
+.pressshot-share__link {
+	display: flex;
+	align-items: flex-end;
+	gap: 8px;
+
+	> :first-child {
+		flex: 1;
+	}
+}
+
+// Snackbars sit at the bottom left of the window, like in the editor.
+.pressshot-snackbars {
+	position: fixed;
+	bottom: 24px;
+	left: 24px;
+	right: 24px;
+	z-index: 100001;
+	pointer-events: none;
+
+	.components-snackbar {
+		pointer-events: auto;
+	}
+}
+
+.pressshot-viewer__missing {
+	padding: 24px;
+}
+
+// App layout: the Library fills the window below the admin bar. The sidebar runs full height and
+// only the shots scroll. Everything here is scoped to the block's `is-app-layout` class, so the
+// Library looks the same as before when the setting is off.
+$pressshot-admin-bar: var(--wp-admin--admin-bar--height, 0px);
+
+.wp-block-pressshot-library.is-app-layout {
+	height: calc(100dvh - #{$pressshot-admin-bar});
+
+	#pressshot-library {
+		height: 100%;
+	}
+
+	.pressshot-library {
+		height: 100%;
+		grid-template-columns: 240px minmax(0, 1fr);
+	}
+
+	.pressshot-sidebar {
+		position: sticky;
+		top: $pressshot-admin-bar;
+		height: 100%;
+		overflow-y: auto;
+		box-sizing: border-box;
+	}
+
+	// The account row sits at the bottom; Trash stays right after the lists.
+	.pressshot-sidebar__account {
+		margin-top: auto;
+	}
+
+	.pressshot-library__main {
+		overflow-y: auto;
+	}
+
+	// Collapsed: overrides the app layout's two columns above.
+	.pressshot-library.is-sidebar-collapsed {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	@media (max-width: 781px) {
+
+		.pressshot-library {
+			grid-template-columns: minmax(0, 1fr);
+		}
+
+		.pressshot-sidebar {
+			position: fixed;
+			top: $pressshot-admin-bar;
+			bottom: 0;
+			left: 0;
+			z-index: 100000;
+			width: min(280px, 85vw);
+			height: auto;
+			padding: 16px;
+			border-bottom: 0;
+			border-inline-end: 1px solid $pressshot-line;
+			background: $pressshot-surface;
+			box-shadow: 0 0 24px rgba(0, 0, 0, 0.15);
+			transform: translateX(-100%);
+			visibility: hidden;
+			transition: transform 0.2s ease, visibility 0s linear 0.2s;
+
+			&.is-open {
+				transform: none;
+				visibility: visible;
+				transition: transform 0.2s ease;
+			}
+
+			@media (prefers-reduced-motion: reduce) {
+				transition: none;
+
+				&.is-open {
+					transition: none;
+				}
+			}
+		}
+
+		// On narrow screens the sidebar button opens the sidebar over the shots, so a
+		// collapsed sidebar is still there to slide in.
+		.pressshot-library.is-sidebar-collapsed > .pressshot-sidebar {
+			display: flex;
+		}
+
+		// The open sidebar's close button, at its top right, clear of the brand row.
+		.pressshot-sidebar__close.components-button {
+			position: absolute;
+			top: 20px;
+			inset-inline-end: 12px;
+			color: inherit;
+		}
+
+		.pressshot-sidebar.is-open .pressshot-sidebar__brand {
+			padding-inline-end: 40px;
+		}
+
+		// Dims the shots behind the open sidebar; clicking it closes the sidebar.
+		.pressshot-sidebar-backdrop {
+			display: block;
+			position: fixed;
+			inset: $pressshot-admin-bar 0 0;
+			z-index: 99999;
+			background: rgba(0, 0, 0, 0.4);
+		}
+	}
+}
+
+// Only the narrow-screen app layout shows the backdrop (below).
+.pressshot-sidebar-backdrop {
+	display: none;
+}
+
+// Brand row: the site icon (or the PressShot mark) and the site name, linking home.
+.pressshot-sidebar__brand {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	min-height: 40px;
+	margin-bottom: 12px;
+	padding-inline: 8px;
+	color: inherit;
+	font-family: var(--wp--preset--font-family--heading, inherit);
+	font-size: 16px;
+	font-weight: 600;
+	line-height: 1.3;
+	text-decoration: none;
+
+	&:hover .pressshot-sidebar__site-name {
+		text-decoration: underline;
+	}
+
+	.pressshot-mark,
+	.pressshot-sidebar__site-icon {
+		flex: none;
+		width: 24px;
+		height: 24px;
+	}
+
+	.pressshot-sidebar__site-icon {
+		border-radius: 4px;
+		object-fit: cover;
+	}
+}
+
+.pressshot-sidebar__site-name,
+.pressshot-sidebar__user-name {
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
+// The block's inner blocks (a light and dark toggle, say), in the account row.
+.pressshot-sidebar__extras {
+	display: flex;
+	flex: none;
+	align-items: center;
+
+	&:empty {
+		display: none;
+	}
+
+	.pressshot-library__extras {
+		display: flex;
+		align-items: center;
+		gap: 4px;
+	}
+
+	.pressshot-library__extras > * {
+		margin-block: 0;
+	}
+}
+
+// Account row, one line: the account button (avatar, name over a small "Account" label, chevron)
+// takes the room, and the block's extras sit at the right end.
+.pressshot-sidebar__account {
+	display: flex;
+	align-items: center;
+	gap: 4px;
+	margin-top: 16px;
+	padding: 12px 0 0;
+	border-top: 1px solid $pressshot-line;
+	font-size: 13px;
+
+	.pressshot-sidebar__avatar {
+		flex: none;
+	}
+
+	// The menu's own wrapper takes the room; the button fills it.
+	.components-dropdown {
+		flex: 1;
+		min-width: 0;
+	}
+}
+
+.pressshot-sidebar__account .pressshot-sidebar__account-button.components-button {
+	width: 100%;
+	height: auto;
+	min-height: 44px;
+	justify-content: flex-start;
+	gap: 8px;
+	padding: 6px 8px;
+	text-align: start;
+	color: inherit;
+
+	// The chevron sits at the far end, pointing the way the menu opens.
+	> svg {
+		margin-inline-start: auto;
+		flex: none;
+		color: $pressshot-muted;
+	}
+
+	.pressshot-sidebar__account-text {
+		display: flex;
+		flex: 1;
+		flex-direction: column;
+		min-width: 0;
+		line-height: 1.3;
+	}
+
+	.pressshot-sidebar__user-name {
+		font-weight: 500;
+	}
+
+	.pressshot-sidebar__account-label {
+		font-size: 11px;
+		color: $pressshot-muted;
+	}
+}

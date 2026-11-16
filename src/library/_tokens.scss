@@ -1,0 +1,6 @@
+// Colors come from the theme's presets so the Library sits in the site's look,
+// with WordPress admin-like fallbacks for themes without them.
+$pressshot-text: var(--wp--preset--color--contrast, #1e1e1e);
+$pressshot-surface: var(--wp--preset--color--base, #fff);
+$pressshot-line: color-mix(in srgb, #{$pressshot-text} 12%, transparent);
+$pressshot-muted: color-mix(in srgb, #{$pressshot-text} 70%, transparent);

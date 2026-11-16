@@ -1,0 +1,208 @@
+// Makes WordPress components (dialogs, menus, DataViews popovers) follow the
+// theme's colors. The plugin adds the classes below only when the active theme's own palette
+// defines the slugs, so every other theme keeps WordPress's default look.
+@use 'tokens' as *;
+
+// The --wpds-* overrides below are deliberate: they apply only on Library pages whose theme
+// defines these presets, and follow its light and dark presets with no JS. Revisit with
+// @wordpress/theme's ThemeProvider later.
+/* stylelint-disable plugin-wpds/no-setting-wpds-custom-properties */
+
+// Theme defines an accent color. Selected and primary states fill with the accent and put the
+// theme's base color on it (its light text in light mode, its dark text in dark mode), which
+// meets 4.5:1 with the PressShot presets.
+$pressshot-accent: var(--wp--preset--color--accent);
+$pressshot-on-accent: var(--wp--preset--color--base, #fff);
+
+body.has-pressshot-library.has-pressshot-accent {
+	--wp-admin-theme-color: #{$pressshot-accent};
+	--wp-admin-theme-color-darker-10: color-mix(in srgb, #{$pressshot-accent} 90%, black);
+	--wp-admin-theme-color-darker-20: color-mix(in srgb, #{$pressshot-accent} 80%, black);
+
+	// Older component styles.
+	--wp-components-color-accent: #{$pressshot-accent};
+	--wp-components-color-accent-darker-10: color-mix(in srgb, #{$pressshot-accent} 90%, black);
+	--wp-components-color-accent-darker-20: color-mix(in srgb, #{$pressshot-accent} 80%, black);
+	--wp-components-color-accent-inverted: #{$pressshot-on-accent};
+
+	// WordPress design tokens (DataViews, menus, and newer components read these).
+	--wpds-color-background-interactive-brand-strong: #{$pressshot-accent};
+	--wpds-color-background-interactive-brand-strong-active: color-mix(in srgb, #{$pressshot-accent} 88%, #{$pressshot-text});
+	--wpds-color-background-interactive-brand-weak-active: color-mix(in srgb, #{$pressshot-accent} 14%, #{$pressshot-surface});
+	--wpds-color-background-surface-brand: color-mix(in srgb, #{$pressshot-accent} 10%, #{$pressshot-surface});
+	--wpds-color-background-thumb-brand: #{$pressshot-accent};
+	--wpds-color-background-thumb-brand-active: #{$pressshot-accent};
+	--wpds-color-foreground-interactive-brand: #{$pressshot-accent};
+	--wpds-color-foreground-interactive-brand-active: color-mix(in srgb, #{$pressshot-accent} 80%, #{$pressshot-text});
+	--wpds-color-foreground-interactive-brand-strong: #{$pressshot-on-accent};
+	--wpds-color-foreground-interactive-brand-strong-active: #{$pressshot-on-accent};
+	--wpds-color-stroke-focus: #{$pressshot-accent};
+	--wpds-color-stroke-interactive-brand: #{$pressshot-accent};
+	--wpds-color-stroke-interactive-brand-active: color-mix(in srgb, #{$pressshot-accent} 85%, #{$pressshot-text});
+	--wpds-color-stroke-surface-brand: color-mix(in srgb, #{$pressshot-accent} 40%, #{$pressshot-surface});
+	--wpds-color-stroke-surface-brand-strong: #{$pressshot-accent};
+
+	// Selected toggles: pressed buttons in the toolbar and DataViews (the filter toggle when
+	// filters are on, grid or table) and the chosen option in a toggle group (density, items
+	// per page, sort order). The sidebar's rows keep their tint for current and pressed.
+	.pressshot-toolbar,
+	.dataviews-wrapper,
+	.components-popover {
+		.components-button.is-pressed:not(.pressshot-sidebar__item),
+		.components-button.is-pressed:not(.pressshot-sidebar__item):hover:not(:disabled),
+		.components-toggle-group-control-option-base[aria-checked='true'] {
+			background: $pressshot-accent;
+			color: $pressshot-on-accent;
+		}
+	}
+}
+
+// The text color mixed into the surface: an opaque tint, so contrast holds on any layer.
+@function pressshot-tint($amount) {
+	@return color-mix(in srgb, #{$pressshot-text} $amount, #{$pressshot-surface});
+}
+
+// Theme defines base and contrast colors. WordPress's design tokens and the older component
+// colors are set from them, so DataViews, menus, and dialogs follow the theme in light and dark,
+// including when the theme swaps its presets for dark mode.
+body.has-pressshot-library.has-pressshot-theme-colors {
+	--wp-components-color-foreground: #{$pressshot-text};
+	--wp-components-color-foreground-inverted: #{$pressshot-surface};
+	--wp-components-color-background: #{$pressshot-surface};
+	--wp-components-color-gray-100: #{pressshot-tint(6%)};
+	--wp-components-color-gray-200: #{pressshot-tint(12%)};
+	--wp-components-color-gray-300: #{pressshot-tint(20%)};
+	--wp-components-color-gray-400: #{pressshot-tint(30%)};
+	--wp-components-color-gray-600: #{pressshot-tint(55%)};
+	--wp-components-color-gray-700: #{pressshot-tint(70%)};
+	--wp-components-color-gray-800: #{pressshot-tint(85%)};
+
+	--wpds-color-background-surface-neutral: #{$pressshot-surface};
+	--wpds-color-background-surface-neutral-strong: #{$pressshot-surface};
+	--wpds-color-background-surface-neutral-weak: #{pressshot-tint(4%)};
+	--wpds-color-background-interactive-neutral-strong: #{$pressshot-text};
+	--wpds-color-background-interactive-neutral-strong-active: #{pressshot-tint(88%)};
+	--wpds-color-background-interactive-neutral-strong-disabled: #{pressshot-tint(10%)};
+	--wpds-color-background-interactive-neutral-weak-active: #{pressshot-tint(10%)};
+	--wpds-color-background-interactive-brand-strong-disabled: #{pressshot-tint(10%)};
+	--wpds-color-background-track-neutral-weak: #{pressshot-tint(8%)};
+	--wpds-color-background-track-neutral: #{pressshot-tint(16%)};
+	--wpds-color-background-thumb-neutral-weak: #{pressshot-tint(50%)};
+	--wpds-color-background-thumb-neutral-weak-active: #{pressshot-tint(62%)};
+	--wpds-color-background-thumb-neutral-weak-disabled: #{pressshot-tint(16%)};
+	--wpds-color-background-thumb-brand-disabled: #{pressshot-tint(16%)};
+	--wpds-color-foreground-content-neutral: #{$pressshot-text};
+	--wpds-color-foreground-content-neutral-weak: #{pressshot-tint(72%)};
+	--wpds-color-foreground-interactive-neutral: #{$pressshot-text};
+	--wpds-color-foreground-interactive-neutral-active: #{$pressshot-text};
+	--wpds-color-foreground-interactive-neutral-disabled: #{pressshot-tint(45%)};
+	--wpds-color-foreground-interactive-neutral-strong: #{$pressshot-surface};
+	--wpds-color-foreground-interactive-neutral-strong-active: #{$pressshot-surface};
+	--wpds-color-foreground-interactive-neutral-strong-disabled: #{pressshot-tint(45%)};
+	--wpds-color-foreground-interactive-neutral-weak: #{pressshot-tint(72%)};
+	--wpds-color-foreground-interactive-neutral-weak-active: #{$pressshot-text};
+	--wpds-color-foreground-interactive-neutral-weak-disabled: #{pressshot-tint(45%)};
+	--wpds-color-foreground-interactive-brand-disabled: #{pressshot-tint(45%)};
+	--wpds-color-foreground-interactive-brand-strong-disabled: #{pressshot-tint(45%)};
+	--wpds-color-stroke-surface-neutral: #{pressshot-tint(16%)};
+	--wpds-color-stroke-surface-neutral-weak: #{pressshot-tint(8%)};
+	--wpds-color-stroke-surface-neutral-strong: #{pressshot-tint(50%)};
+	--wpds-color-stroke-interactive-neutral: #{pressshot-tint(50%)};
+	--wpds-color-stroke-interactive-neutral-active: #{pressshot-tint(62%)};
+	--wpds-color-stroke-interactive-neutral-disabled: #{pressshot-tint(16%)};
+	--wpds-color-stroke-interactive-neutral-strong: #{pressshot-tint(62%)};
+	--wpds-color-stroke-interactive-brand-disabled: #{pressshot-tint(16%)};
+
+	.components-modal__frame,
+	.components-popover__content,
+	.components-popover__header,
+	.components-dropdown-menu__menu {
+		background: $pressshot-surface;
+		color: $pressshot-text;
+	}
+
+	// On phones a popover opens full screen, with a header holding its close button.
+	.components-popover__header {
+		border-bottom-color: $pressshot-line;
+	}
+
+	.components-popover__close.components-button {
+		color: $pressshot-text;
+	}
+
+	.components-modal__header {
+		border-bottom-color: $pressshot-line;
+	}
+
+	.components-modal__header .components-modal__header-heading,
+	.components-modal__header .components-button,
+	.components-modal__frame label,
+	.components-modal__frame .components-base-control__label {
+		color: $pressshot-text;
+	}
+
+	// Field and checkbox borders at 55% measure at least 3:1 against the surface in light and dark.
+	.components-text-control__input,
+	.components-select-control__input,
+	.components-input-control__input,
+	.components-input-control__container {
+		background: $pressshot-surface;
+		color: $pressshot-text;
+		border-color: #{pressshot-tint(55%)};
+	}
+
+	// Checkboxes (Select all, dialogs): the surface behind an empty box, not white, with a
+	// border strong enough to see in light and dark. Checked boxes keep the accent fill.
+	.components-checkbox-control__input[type='checkbox']:not(:checked, :indeterminate) {
+		background: $pressshot-surface;
+		border-color: #{pressshot-tint(55%)};
+	}
+
+	.components-input-control__input::placeholder {
+		color: $pressshot-muted;
+	}
+
+	// DataViews paints its own white panels and hard-codes dark text in a few places. (Not the
+	// bulk actions bar: in the table it covers the column headers, so it keeps its background.)
+	.dataviews-wrapper,
+	.dataviews__view-actions,
+	.dataviews-layout__container,
+	.dataviews-footer {
+		background: transparent;
+		color: $pressshot-text;
+	}
+
+	.dataviews-footer,
+	.dataviews-bulk-actions,
+	.dataviews-view-grid__bulk-actions-header {
+		border-color: $pressshot-line;
+	}
+
+	.dataviews-view-grid__title-field,
+	.dataviews-footer__item-count,
+	.dataviews-wrapper label,
+	.dataviews-wrapper .components-button:not(.is-primary, .is-secondary, .is-tertiary, .is-destructive, .is-pressed) {
+		color: $pressshot-text;
+	}
+
+	// Design-system menus and popups (filter menu, value lists) use hashed class names, so match
+	// the stable part, inside a popover or dialog or as a menu.
+	[role='menu'][class*='__popup'],
+	.components-popover [class*='__popup'],
+	[role='dialog'] [class*='__popup'] {
+		background: $pressshot-surface;
+		color: $pressshot-text;
+	}
+
+	.dataviews-filters__search-widget-listitem {
+		color: $pressshot-text;
+
+		&:hover,
+		&[data-active-item],
+		&[aria-selected='true'] {
+			background: color-mix(in srgb, #{$pressshot-text} 12%, transparent);
+		}
+	}
+}
+
+/* stylelint-enable plugin-wpds/no-setting-wpds-custom-properties */

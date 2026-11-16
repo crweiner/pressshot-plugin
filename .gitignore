@@ -1,0 +1,20 @@
+# Dependencies and build output (the release ZIP is built with npm run plugin-zip)
+node_modules/
+build/
+*.zip
+coverage/
+
+# macOS, editor, and local state
+.DS_Store
+._*
+.idea/
+.vscode/
+*.swp
+*.log
+.env
+.env.*
+
+# Agent and tool scratch: build ledgers, review files, local settings
+.superpowers/
+.claude/
+.playwright-mcp/

@@ -1,0 +1,30 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "pressshot/share-view",
+	"title": "PressShot shared view",
+	"category": "widgets",
+	"description": "Shows the shot or folder behind a PressShot share link. Used by the share page template.",
+	"textdomain": "pressshot",
+	"attributes": {
+		"align": {
+			"type": "string",
+			"default": "full"
+		},
+		"showSiteName": {
+			"type": "boolean",
+			"default": false
+		}
+	},
+	"supports": {
+		"align": [ "full" ],
+		"html": false,
+		"interactivity": true,
+		"inserter": false,
+		"multiple": false
+	},
+	"editorScript": "file:../../build/share-view-editor.js",
+	"render": "file:./render.php",
+	"style": "file:./style.css",
+	"viewScriptModule": "file:./view.js"
+}
