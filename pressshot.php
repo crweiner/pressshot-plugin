@@ -3,7 +3,7 @@
  * Plugin Name: PressShot
  * Plugin URI: https://github.com/dhanson-wp/pressshot-plugin
  * Description: A team Library for PressShot shots at /shots.
- * Version: 1.0.2
+ * Version: 1.0.3
  * Requires at least: 7.1
  * Requires PHP: 7.4
  * Author: Derek Hanson
@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'PRESSSHOT_VERSION', '1.0.2' );
+define( 'PRESSSHOT_VERSION', '1.0.3' );
 
 require_once __DIR__ . '/includes/shots.php';
 
@@ -37,6 +37,8 @@ require_once __DIR__ . '/includes/share-pages.php';
 require_once __DIR__ . '/includes/shots-page.php';
 
 require_once __DIR__ . '/includes/public-surface.php';
+
+require_once __DIR__ . '/includes/private-site.php';
 
 register_activation_hook( __FILE__, 'pressshot_share_activate' );
 
