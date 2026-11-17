@@ -5,7 +5,8 @@
  * Right now there's one setting: whether share links open while a WordPress.com site is set to
  * Private (the pressshot_share_on_private_site option, read by pressshot_private_site_sharing_enabled()
  * in includes/private-site.php). The page shows up under Settings → PressShot for administrators,
- * and only while the site is Private, because on any other site share links already open.
+ * and only while the site is Private (see pressshot_site_is_private()), because on any other site
+ * share links already open.
  *
  * The option is registered with show_in_rest, so administrators can also read and change it at
  * /wp/v2/settings. The REST index (/wp-json/) carries a pressshot object with the site's private
@@ -20,11 +21,21 @@ const PRESSSHOT_SHARE_ON_PRIVATE_SITE_OPTION = 'pressshot_share_on_private_site'
 const PRESSSHOT_SETTINGS_PAGE                = 'pressshot';
 
 /**
- * Whether this site is set to Private on WordPress.com. WordPress.com stores that as blog_public -1;
- * core WordPress only ever uses 0 and 1. The pressshot_site_is_private filter can override it.
+ * Whether this site is set to Private on WordPress.com. Two signs count, and either is enough:
+ *
+ * - WordPress.com's page gate is hooked. That is what turns visitors away, and what
+ *   includes/private-site.php acts on. It follows the site's privacy model, not blog_public.
+ * - blog_public is -1, which is how WordPress.com stores Private (core only ever uses 0 and 1).
+ *
+ * The two can disagree: blog_public can say public on a site the privacy model keeps private. Going
+ * by blog_public alone would hide the setting on a site whose share links are in fact being blocked.
+ * The gate is hooked on init, so ask from init onward. The pressshot_site_is_private filter can
+ * override the answer.
  */
 function pressshot_site_is_private() {
-	return (bool) apply_filters( 'pressshot_site_is_private', '-1' === (string) get_option( 'blog_public' ) );
+	$private = '-1' === (string) get_option( 'blog_public' )
+		|| false !== pressshot_private_site_gate_priority( 'parse_request', PRESSSHOT_PRIVATE_SITE_PAGE_GATE );
+	return (bool) apply_filters( 'pressshot_site_is_private', $private );
 }
 
 /** True when the pressshot_share_on_private_site filter gives a different answer than the saved option. */

@@ -3,7 +3,7 @@ Tags: screenshots, screen recording, media library, sharing, team
 Requires at least: 7.1
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.0.3
+Stable tag: 1.0.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -71,9 +71,12 @@ No. It works on self-hosted WordPress and on WordPress.com plans that allow plug
 
 == Changelog ==
 
-= 1.0.3 =
-* A WordPress.com site set to Private can let share links open for signed-out visitors. It's off until an administrator turns it on in **Settings → PressShot**, which shows up only while the site is Private (or with `wp option update pressshot_share_on_private_site 1`; the `pressshot_share_on_private_site` filter wins over both). Only a live link's page and media get through, the page is shown without the theme's header and footer, and revoked, expired, and unknown links still see the site's private screen.
+= 1.0.4 =
+* Settings → PressShot, for administrators, has the switch that lets share links open while a WordPress.com site is set to Private. The page shows up only while the site is Private. `wp option update pressshot_share_on_private_site 1` still works, and the `pressshot_share_on_private_site` filter wins over both.
 * The REST index (`/wp-json/`) has a `pressshot` object saying whether the site is Private and whether share links open on it, for the Mac app to read.
+
+= 1.0.3 =
+* A WordPress.com site set to Private can let share links open for signed-out visitors. It's off until you turn it on (`wp option update pressshot_share_on_private_site 1`, or the `pressshot_share_on_private_site` filter). Only a live link's page and media get through, the page is shown without the theme's header and footer, and revoked, expired, and unknown links still see the site's private screen.
 
 = 1.0.2 =
 * Recordings on shared folder pages show their VideoPress poster instead of a plain tile.

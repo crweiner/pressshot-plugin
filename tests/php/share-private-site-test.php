@@ -58,8 +58,16 @@ $token = $live['token'];
 $route = '/pressshot/v1/links/' . $token;
 
 // Off until the site turns it on.
+// Checked without this site's own saved choice, which is put back straight after.
+$had_sharing_option   = false !== get_option( 'pressshot_share_on_private_site', false );
+$saved_sharing_option = get_option( 'pressshot_share_on_private_site', null );
+delete_option( 'pressshot_share_on_private_site' );
+remove_all_filters( 'pressshot_share_on_private_site' );
+$check( 'private site: sharing is off by default', false === pressshot_private_site_sharing_enabled() );
+if ( $had_sharing_option ) {
+	update_option( 'pressshot_share_on_private_site', $saved_sharing_option );
+}
 $sharing( false );
-$check( 'private site: sharing is off by default', false === (bool) get_option( 'pressshot_share_on_private_site', false ) );
 $check( 'private site, sharing off: a live link\'s route gets private_site 403', 403 === $call( 'GET', $route )->get_status() );
 $check( 'private site, sharing off: a live link\'s page stays closed', 'closed' === pressshot_private_site_share_request( $share_wp( $token ) ) );
 pressshot_private_site_open_share_page( $share_wp( $token ) );

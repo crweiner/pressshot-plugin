@@ -56,6 +56,8 @@ wp option update pressshot_share_on_private_site 0
 
 Turning it off closes every link again right away. Nothing about the links themselves changes, so turning it back on opens the same ones.
 
+The setting stays saved if the site stops being Private. Make the site public and set it to Private again later, and the links are open from that moment, without asking again. Turn the setting off first if you don't want that.
+
 ## For the Mac app and other tools
 
 The site's REST index (`/wp-json/`) carries a `pressshot` object with two fields, so an app that's signed in can tell where things stand:
@@ -76,7 +78,7 @@ If you work with a coding agent that can run WP-CLI on your site, paste this in.
 ```text
 I want share links from my PressShot Library to open while my WordPress.com site stays Private. Use WP-CLI on the site, and walk me through it one step at a time.
 
-1. Check the site is set to Private. Run `wp option get blog_public`. It should print -1. If it doesn't, stop and tell me; on a public site, share links already open and there's nothing to do.
+1. Check the site is set to Private. From somewhere that isn't signed in, run `curl -sS "https://SITE/wp-json/"` with my site's address. A Private site answers with a private_site error ("This site is private."). If a long list of routes comes back instead, stop and tell me; on a public site, share links already open and there's nothing to do. Don't go by `wp option get blog_public` alone: it is usually -1 on a Private site, but WordPress.com decides from the site's privacy setting, and the two can disagree.
 
 2. List every live share link, so I can decide what to revoke first. Run:
 
@@ -88,7 +90,7 @@ I want share links from my PressShot Library to open while my WordPress.com site
 
 4. When I say go, turn the setting on: `wp option update pressshot_share_on_private_site 1`. Then run `wp eval 'echo wp_json_encode( pressshot_site_sharing_info() );'`. It should print "privateSite":true and "shareOnPrivateSite":true. If shareOnPrivateSite is still false, a pressshot_share_on_private_site filter on the site is turning it off; tell me where it is.
 
-5. Confirm it works signed out. Pick one link that's still live and run `curl -sS -o /dev/null -w "%{http_code} %{redirect_url}\n" "LINK"`. A 200 means the link opens. A redirect to a WordPress.com sign-in page means it's still blocked, so tell me what you see.
+5. Confirm it works signed out. Pick one link that's still live and run `curl -sS "LINK" | grep -c "wp-block-pressshot-share-view"`. 1 or more means the share page came back, so the link opens. 0 means it's still blocked, so tell me what you see. Don't go by the status code: the Private site's sign-in screen also answers 200.
 
 Don't revoke links I didn't pick, and don't change any other setting.
 ```

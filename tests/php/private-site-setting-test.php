@@ -53,9 +53,40 @@ $admin  = $make_user( 'administrator' );
 $editor = $make_user( 'editor' );
 $author = $make_user( 'author' );
 
-// Private status: WordPress.com stores Private as blog_public -1.
+// Private status: WordPress.com's gate being hooked, or blog_public -1. Either is enough.
 remove_all_filters( 'pressshot_site_is_private' );
-$check( 'private status follows blog_public', ( '-1' === (string) get_option( 'blog_public' ) ) === pressshot_site_is_private() );
+$gate        = '\\Private_Site\\parse_request';
+$gate_was_on = pressshot_private_site_gate_priority( 'parse_request', $gate );
+pressshot_private_site_remove_gate( 'parse_request', $gate, false === $gate_was_on ? 100 : $gate_was_on );
+$blog_public = function ( $value ) {
+	remove_all_filters( 'pre_option_blog_public' );
+	if ( null !== $value ) {
+		add_filter(
+			'pre_option_blog_public',
+			function () use ( $value ) {
+				return $value;
+			}
+		);
+	}
+};
+$blog_public( '-1' );
+$check( 'blog_public -1 counts as Private', pressshot_site_is_private() );
+$blog_public( '1' );
+$check( 'a public site with no gate isn\'t Private', ! pressshot_site_is_private() );
+$blog_public( '0' );
+$check( 'a site hidden from search engines with no gate isn\'t Private', ! pressshot_site_is_private() );
+add_action( 'parse_request', $gate, 100 );
+$check( 'WordPress.com\'s gate counts as Private when blog_public says public', pressshot_site_is_private() );
+$check( 'the REST index object says Private when only the gate does', true === pressshot_site_sharing_info()['privateSite'] );
+wp_set_current_user( $make_user( 'administrator' ) );
+$check( 'Settings → PressShot shows up when only the gate says Private', $menu() );
+wp_set_current_user( 0 );
+remove_action( 'parse_request', $gate, 100 );
+$check( 'without the gate, blog_public decides again', ! pressshot_site_is_private() );
+$blog_public( null );
+if ( false !== $gate_was_on ) {
+	add_action( 'parse_request', $gate, $gate_was_on );
+}
 $private( true );
 $check( 'the private status filter can mark a site Private', pressshot_site_is_private() );
 
